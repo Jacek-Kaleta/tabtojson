@@ -38,7 +38,7 @@ exports.tab2json = function(text, param) {
     function processlines(d, node) {
         while (i < lines.length) {
             let line = lines[i];
-            if (line.trim().length == 0) throw param.onError(0, i);
+            if (line.trim().length == 0) throw param.onError(0, i+1);
             let l = (line.match(/^\t*/))[0].length;
 
             if (l == d) {
@@ -54,7 +54,7 @@ exports.tab2json = function(text, param) {
                 i++
                 processlines(l, node[node.length - 1].children)
             } else
-            if (l > d + 1) throw param.onError(2, i);
+            if (l > d + 1) throw param.onError(2, i+1);
             if (l < d) return;
         }
     };
