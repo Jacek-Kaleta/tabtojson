@@ -27,7 +27,7 @@ exports.tab2json = function(text, param) {
     if (param.cr == undefined) param.cr = '\r\n';
     if (param.onError == undefined)
         param.onError = function(error, line) {
-            throw { error, line }
+            return { error, line }
         }
     let jsonObj = [];
     let lines = text.split(param.cr);
