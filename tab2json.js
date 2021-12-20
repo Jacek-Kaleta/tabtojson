@@ -25,37 +25,43 @@ SOFTWARE.
 exports.tab2json = function(text, param) {
     if (param == undefined) param = {}
     if (param.cr == undefined) param.cr = '\r\n';
+    if (param.value == undefined) param.value = 'text';
+    if (param.subnodes == undefined) param.subnodes = 'objarray';
     if (param.onError == undefined)
-        param.onError = function(error, line) {
-            return { error, line }
+        param.onError = function(lineNumber) {
+            return { lineNumber }
         }
-    let jsonObj = [];
+
     let lines = text.split(param.cr);
     let i = 0;
-    processlines(0, jsonObj)
-    return jsonObj;
+    return processlines(0);
 
-    function processlines(d, node) {
-        while (i < lines.length) {
-            let line = lines[i];
-            if (line.trim().length == 0) throw param.onError(0, i+1);
-            let l = (line.match(/^\t*/))[0].length;
+    function tabcount(i) {
+        if (i >= lines.length) return 0;
+        let line = lines[i];
+        if (line.trim().length == 0) return 0;
+        return (line.match(/^\t*/))[0].length;
+    }
 
-            if (l == d) {
-                node.push({ name: line.trim() /*, children: []*/ });
-                i++
-            } else
-            if (l == d + 1) {
-                if (node.length == 0) throw param.onError(1, i);
+    function getline(i) {
+        if (i >= lines.length) return "";
+        return lines[i].trim();
+    }
 
-                if (node[node.length - 1].children == undefined)
-                    node[node.length - 1].children = [];
-                node[node.length - 1].children.push({ 'name': line.trim() /*, children: [] */ });
-                i++
-                processlines(l, node[node.length - 1].children)
-            } else
-            if (l > d + 1) throw param.onError(2, i+1);
-            if (l < d) return;
+    function processlines(d) {
+        let obj = [];
+        i++;
+        while (i < lines.length && tabcount(i) == d) {
+            obj.push({});
+            obj[obj.length - 1][param.value] = getline(i);
+            let l = tabcount(i + 1);
+            if (l > d + 1) throw param.onError(i + 2);
+
+            if (l == d + 1)
+                obj[obj.length - 1][param.subnodes] = processlines(d + 1);
+            else
+                i++;
         }
+        return obj;
     };
 }
