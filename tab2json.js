@@ -52,8 +52,9 @@ exports.tab2json = function(text, param) {
         let obj = [];
         i++;
         while (i < lines.length && tabcount(i) == d) {
-            obj.push({});
-            obj[obj.length - 1][param.value] = getline(i);
+            obj.push({
+                [param.value]: getline(i)
+            });
             let l = tabcount(i + 1);
             if (l > d + 1) throw param.onError(i + 2);
 
