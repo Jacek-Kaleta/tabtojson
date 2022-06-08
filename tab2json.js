@@ -33,7 +33,7 @@ exports.tab2json = function(text, param) {
         }
 
     let lines = text.split(param.cr);
-    let i = 0;
+    let i = -1;
     return processlines(0);
 
     function tabcount(i) {
